@@ -41,6 +41,9 @@
 			margin-bottom: 0;
 			padding-top: 0;
 		}
+		.hidden {
+			display: none;
+		}
 	</style>
 </head>
 <body id="user_input" onkeydown="keyHandler(event)">
@@ -60,7 +63,7 @@
 	   height="111.83556mm"
 	   viewBox="0 0 67.847015 111.83556"
 	   version="1.1"
-	   id="svg8"
+	   id="guide"
 	   inkscape:version="1.0rc1 (09960d6f05, 2020-04-09)"
 	   sodipodi:docname="decatxt.svg">
 	  <defs
@@ -343,6 +346,7 @@
 	  </g>
 	</svg>
 	<p id="letter_train_display" class="center"></p>
+	<button class="center" onclick="hideGuideHandler(event);">Hide guide</button>
 
 	</div>
 	</div>

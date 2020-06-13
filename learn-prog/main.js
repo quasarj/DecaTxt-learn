@@ -82,6 +82,14 @@ function keyHandler(event) {
 	}
 }
 
+function hideGuideHandler(event) {
+	let el = document.getElementById("guide");
+	el.classList.add("hidden");
+
+	event.target.classList.add("hidden"); // also hide the button
+
+}
+
 function resetNumbers() {
 	for (var i = 0; i < 10; i++) {
 	  turnOffNumber(i);
