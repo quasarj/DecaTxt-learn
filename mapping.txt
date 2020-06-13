@@ -11,6 +11,7 @@ keypress,function
 8,b
 9,c
 51,z
+52,y
 53,x
 54,w
 56,shift

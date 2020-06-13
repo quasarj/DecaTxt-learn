@@ -8,8 +8,11 @@
 			stroke-width:0.264583;
 		}
 		.on {
-			fill:#ff0000;
+			fill: #4063ff;
 			stroke-width:0.264583;
+		}
+		.on + text {
+			fill: white !important;
 		}
 		#letter {
 			font-size: 4em;
@@ -28,13 +31,20 @@
 			padding: 25px;
 			
 		}
+		.alternate {
+			background-color: lightgray;
+		}
+		.error {
+			background-color: lightpink;
+		}
+		#letter_train_display {
+			margin-bottom: 0;
+			padding-top: 0;
+		}
 	</style>
 </head>
-<body>
-	<div id="input_section">
-		<input type="input" id="user_input" onkeydown="keyHandler(event)"/>
-	</div>
-	<div class="container">
+<body id="user_input" onkeydown="keyHandler(event)">
+	<div id="container" class="container">
 	<div class="center">
 		<p id="letter">
 		</p>
@@ -263,7 +273,7 @@
 				 style="stroke-width:0.264583">0</tspan></text>
 		  </g>
 		  <g
-			 id="g88">
+			 id="b1g">
 			<rect
 			   class="off"
 			   id="b1"
@@ -332,6 +342,7 @@
 		</g>
 	  </g>
 	</svg>
+	<p id="letter_train_display" class="center"></p>
 
 	</div>
 	</div>

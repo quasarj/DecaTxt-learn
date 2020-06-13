@@ -18,7 +18,7 @@ let keymap = {"function": "125", "d": "0", "j": "1", "i": "2", "h": "3",
 	          "=": "016", "+": "017", "(": "018", ")": "019", "f1": "681", 
 	          "f2": "682", "f3": "683", "f4": "684", "f5": "687", "f9": "583", 
 	          "fspace": "680", "f7": "581", "f8": "582", "f10": "584", 
-	          "f11": "587", "f12": "589"};
+	          "f11": "587", "f12": "589", "y": "52"};
 
 function turnOnNumber(num) {
   let el = document.getElementById("b" + num);
@@ -45,13 +45,40 @@ function showChar(character) {
 	document.getElementById("letter").innerHTML = character;
 }
 
+function advanceOneLetter() {
+	pos++;
+	if (pos >= letterTrain.length) {
+		pos = 0;
+	}
+}
+
+function indicateInputAccepted() {
+	let el = document.getElementById("container");
+	el.classList.remove("error");
+	if (el.classList.contains("alternate")) {
+		console.log("Removing alternate");
+		el.classList.remove("alternate");
+	} else {
+		console.log("Adding alternate");
+		el.classList.add("alternate");
+	}
+}
+
+function indicateError() {
+	let el = document.getElementById("container");
+	el.classList.add("error");
+}
+
 function keyHandler(event) {
 	let key = event.key;
 	let letter = letterTrain.charAt(pos);
 
 	if (key === letter) {
-		pos++;
+		advanceOneLetter();
+		indicateInputAccepted();
 		updateDisplay();
+	} else {
+		indicateError();
 	}
 }
 
@@ -64,17 +91,19 @@ function resetNumbers() {
 function updateDisplay() {
 	resetNumbers();
 	let letter = letterTrain.charAt(pos);
-	document.getElementById("input_section").value = '';
 	showChar(letter);
+	document.getElementById("user_input").focus();
+
 }
 
-// simple way to get a letter to display from the URL. TEMP
-// const urlParams = new URLSearchParams(window.location.search);
-// const letterToDisplay = urlParams.get('letter') || 'q';
 
-const letterTrain = "asdf gh jkl jkjkjk jkl jkl jlk jkl jkl";
+const defaultLetterTrain = "this is the default letters pass letters param for custom letters";
+const urlParams = new URLSearchParams(window.location.search);
+const letterTrain = urlParams.get('letters') || defaultLetterTrain;
+
 let pos = 0;
 
 document.addEventListener("DOMContentLoaded", function(){
+	document.getElementById("letter_train_display").innerHTML = letterTrain;
 	updateDisplay();
 });
