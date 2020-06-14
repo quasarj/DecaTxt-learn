@@ -26,6 +26,18 @@ function GetById(id) {
 	return document.getElementById(id);
 }
 
+function printableCharName(character) {
+	const printmap = {
+		" ": "space",
+	};
+	let lookup = printmap[character];
+	if (lookup === undefined) {
+		return character;
+	} else {
+		return lookup;
+	}
+}
+
 class DecaTxt {
 	constructor() {
 		this.keypad = new Keypad();
@@ -72,6 +84,7 @@ class DecaTxt {
 	keyHandler(event) {
 		let key = event.key;
 		let letter = this.ticker.currentLetter();
+		this.display.show(key);
 
 		if (key === letter) {
 			this.ticker.nextLetter();
@@ -123,10 +136,7 @@ class Prompt {
 		this.element = GetById("letter");
 	}
 	displayLetter(letter) {
-		if (letter == ' ') {
-			letter = 'space';
-		}
-		this.element.innerHTML = letter;
+		this.element.innerHTML = printableCharName(letter);
 	}
 }
 
@@ -139,6 +149,8 @@ class Ticker {
 		this.tickerstring = urlParams.get('letters') || defaultLetterTrain;
 		this.element.innerHTML = this.tickerstring;
 		this.pos = 0;
+
+		this.updateDisplay();
 	}
 	currentLetter() {
 		return this.tickerstring.charAt(this.pos);
@@ -148,7 +160,18 @@ class Ticker {
 		if (this.pos >= this.tickerstring.length) {
 			this.pos = 0;
 		}
+
+		this.updateDisplay();
+
 		return this.tickerstring.charAt(this.pos);
+	}
+	updateDisplay() {
+		let left = this.tickerstring.substring(0, this.pos);
+		let current = this.tickerstring.substring(this.pos, this.pos + 1);
+		let right = this.tickerstring.substring(this.pos + 1);
+
+		this.element.innerHTML = left + "<span class=\"highlight\">" + 
+			current + "</span>" + right;
 	}
 }
 
@@ -156,7 +179,10 @@ class Ticker {
 // input, so they know what they just typed (in the event of an error)
 class InputDisplay {
 	constructor() {
-		// this.element = GetById("guide");
+		this.element = GetById("last_input");
+	}
+	show(character) {
+		this.element.innerText = printableCharName(character);
 	}
 }
 

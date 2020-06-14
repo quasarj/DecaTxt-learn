@@ -39,6 +39,9 @@
 			padding: 0;
 			margin-bottom: 25px;		
 		}
+		#button_div {
+			margin-top: 1em;
+		}
 		.center {
 			margin-left: auto;
 			margin-right: auto;
@@ -58,15 +61,23 @@
 		}
 		#letter_train_display {
 			margin-bottom: 0;
+			margin-top: 0;
 			padding-top: 0;
 		}
 		.hidden {
 			display: none;
 		}
+		.highlight {
+			font-weight: bold;
+			font-size: 2em;
+			color: #4063ff;
+			text-decoration: underline;
+		}
 	</style>
 </head>
 <body id="user_input" onkeydown="decatxt.keyHandler(event)">
 	<div id="container" class="container">
+	<p id="letter_train_display" class="center"></p>
 	<div class="center">
 		<p id="letter">
 		</p>
@@ -258,8 +269,14 @@
 		</g>
 	  </g>
 	</svg>
-	<p id="letter_train_display" class="center"></p>
-	<button id="hide_button" class="center" onclick="decatxt.hideGuideHandler(event);">Hide keypad</button>
+	<div id="button_div" class="center">
+		<button id="hide_button" class="center" onclick="decatxt.hideGuideHandler(event);">Hide keypad</button>
+	</div>
+	<div>
+		<p>
+			Your last input: <span id="last_input"></span>
+		</p>
+	</div>
 
 	</div>
 	</div>
