@@ -1,4 +1,4 @@
-let keymap = {"function": "125", "d": "0", "j": "1", "i": "2", "h": "3",
+const keymap = {"function": "125", "d": "0", "j": "1", "i": "2", "h": "3",
 			  "g": "4", "f": "5", "e": "6", "a": "7", "b": "8", "c": "9",
 			  "z": "51", "x": "53", "w": "54", "shift": "56", "s": "57",
 	          "t": "58", "u": "59", "v": "50", "r": "61", "q": "62", "p": "63",
@@ -20,98 +20,148 @@ let keymap = {"function": "125", "d": "0", "j": "1", "i": "2", "h": "3",
 	          "fspace": "680", "f7": "581", "f8": "582", "f10": "584", 
 	          "f11": "587", "f12": "589", "y": "52"};
 
-function turnOnNumber(num) {
-  let el = document.getElementById("b" + num);
-  el.classList.add("on")
-}
-function turnOffNumber(num) {
-  let el = document.getElementById("b" + num);
-  el.classList.add("off");
-  el.classList.remove("on");
+// utility functions
+
+function GetById(id) {
+	return document.getElementById(id);
 }
 
-function displayLetter(numstring) {
-	for (var i = 0; i < numstring.length; i++) {
-	  turnOnNumber(numstring.charAt(i));
+class DecaTxt {
+	constructor() {
+		this.keypad = new Keypad();
+		this.prompt = new Prompt();
+		this.ticker = new Ticker();
+		this.display = new InputDisplay();
+
+		this.container_el = GetById("container");
+		this.input_el = GetById("user_input");
+
+		this.success_count = 0;
+		this.error_count = 0;
+
+		this.updateDisplay();
+	}
+	updateDisplay() {
+		this.keypad.resetNumbers();
+		this.showChar(this.ticker.currentLetter());
+		this.input_el.focus();
+	}
+	indicateInputAccepted() {
+		this.success_count++;
+		let el = this.container_el;
+		el.classList.remove("error");
+		if (el.classList.contains("alternate")) {
+			el.classList.remove("alternate");
+		} else {
+			el.classList.add("alternate");
+		}
+	}
+	indicateError() {
+		this.error_count++;
+		this.container_el.classList.add("error");
+	}
+	showChar(character) {
+		this.keypad.displayLetter(keymap[character]);
+		this.prompt.displayLetter(character);
+	}
+	hideGuideHandler(event) {
+		this.keypad.toggleVisibility();
+		// when clicking the button, it will get focus, we don't want that
+		this.input_el.focus();
+	}
+	keyHandler(event) {
+		let key = event.key;
+		let letter = this.ticker.currentLetter();
+
+		if (key === letter) {
+			this.ticker.nextLetter();
+			this.indicateInputAccepted();
+			this.updateDisplay();
+		} else {
+			this.indicateError();
+		}
 	}
 }
 
-function showChar(character) {
-	displayLetter(keymap[character]);
-
-	if (character == ' ') {
-		character = 'space';
+class Keypad {
+	constructor() {
+		this.element = GetById("guide");
+		this.hide_button_el = GetById("hide_button");
 	}
-	document.getElementById("letter").innerHTML = character;
-}
-
-function advanceOneLetter() {
-	pos++;
-	if (pos >= letterTrain.length) {
-		pos = 0;
+	toggleVisibility() {
+		if (this.element.classList.contains("hidden")) {
+			this.element.classList.remove("hidden");
+			this.hide_button_el.innerText = "Hide keypad";
+		} else {
+			this.element.classList.add("hidden");
+			this.hide_button_el.innerText = "Show keypad";
+		}
 	}
-}
-
-function indicateInputAccepted() {
-	let el = document.getElementById("container");
-	el.classList.remove("error");
-	if (el.classList.contains("alternate")) {
-		console.log("Removing alternate");
-		el.classList.remove("alternate");
-	} else {
-		console.log("Adding alternate");
-		el.classList.add("alternate");
+	displayLetter(numstring) {
+		for (var i = 0; i < numstring.length; i++) {
+		  this.turnOnNumber(numstring.charAt(i));
+		}
 	}
-}
-
-function indicateError() {
-	let el = document.getElementById("container");
-	el.classList.add("error");
-}
-
-function keyHandler(event) {
-	let key = event.key;
-	let letter = letterTrain.charAt(pos);
-
-	if (key === letter) {
-		advanceOneLetter();
-		indicateInputAccepted();
-		updateDisplay();
-	} else {
-		indicateError();
+	turnOnNumber(num) {
+	  let el = GetById("b" + num);
+	  el.classList.add("on")
+	}
+	turnOffNumber(num) {
+	  let el = GetById("b" + num);
+	  el.classList.add("off");
+	  el.classList.remove("on");
+	}
+	resetNumbers() {
+		document.getElementsByName("number").forEach(
+			x => x.classList.remove("on")
+		);
 	}
 }
 
-function hideGuideHandler(event) {
-	let el = document.getElementById("guide");
-	el.classList.add("hidden");
-
-	event.target.classList.add("hidden"); // also hide the button
-
-}
-
-function resetNumbers() {
-	for (var i = 0; i < 10; i++) {
-	  turnOffNumber(i);
+class Prompt {
+	constructor() {
+		this.element = GetById("letter");
+	}
+	displayLetter(letter) {
+		if (letter == ' ') {
+			letter = 'space';
+		}
+		this.element.innerHTML = letter;
 	}
 }
 
-function updateDisplay() {
-	resetNumbers();
-	let letter = letterTrain.charAt(pos);
-	showChar(letter);
-	document.getElementById("user_input").focus();
+class Ticker {
+	constructor() {
+		this.element = GetById("letter_train_display");
 
+		let defaultLetterTrain = "default aeiouy";
+		let urlParams = new URLSearchParams(window.location.search);
+		this.tickerstring = urlParams.get('letters') || defaultLetterTrain;
+		this.element.innerHTML = this.tickerstring;
+		this.pos = 0;
+	}
+	currentLetter() {
+		return this.tickerstring.charAt(this.pos);
+	}
+	nextLetter() {
+		this.pos++;
+		if (this.pos >= this.tickerstring.length) {
+			this.pos = 0;
+		}
+		return this.tickerstring.charAt(this.pos);
+	}
 }
 
+// This is intended for the element that will display the user's
+// input, so they know what they just typed (in the event of an error)
+class InputDisplay {
+	constructor() {
+		// this.element = GetById("guide");
+	}
+}
 
-const defaultLetterTrain = "this is the default letters pass letters param for custom letters";
-const urlParams = new URLSearchParams(window.location.search);
-const letterTrain = urlParams.get('letters') || defaultLetterTrain;
-
-let pos = 0;
+let decatxt;
 
 document.addEventListener("DOMContentLoaded", function(){
-	document.getElementById("letter_train_display").innerHTML = letterTrain;
-	updateDisplay();
+	decatxt = new DecaTxt();
 });
